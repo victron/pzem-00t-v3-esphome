@@ -4,6 +4,7 @@ _ref:_
 - https://www.youtube.com/watch?v=HnTm1Emop7g
 
 - https://github.com/olehs/PZEM004T/issues/38#issuecomment-509928046
+- https://github.com/TrDA-hab/Projects/blob/master/PZEM%2BESP-01S/README.md
 
 
 ![image](https://github.com/victron/pzem-00t-v3-esphome/assets/8330202/ad63986b-aa90-4776-9057-165ff68ff4d9)
