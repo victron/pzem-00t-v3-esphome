@@ -3,6 +3,8 @@ _ref:_
 - https://innovatorsguru.com/pzem-004t-v3/
 - https://www.youtube.com/watch?v=HnTm1Emop7g
 
+- https://github.com/olehs/PZEM004T/issues/38#issuecomment-509928046
+
 
 ![image](https://github.com/victron/pzem-00t-v3-esphome/assets/8330202/ad63986b-aa90-4776-9057-165ff68ff4d9)
 
