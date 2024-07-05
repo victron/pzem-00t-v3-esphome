@@ -16,3 +16,14 @@ calibrate:
 ## ESP-01 flashing
 ![image](https://github.com/victron/pzem-00t-v3-esphome/assets/8330202/c6ef3b56-0055-4019-9f20-8cf8bffb7184)
 brown line need to disconnect afteter message 'prepaing install'
+
+
+## ESP-01 з гальваничною розв'язкою
+- зняти роз'єм
+- на його місце припаяти esp-01 (вже прошиту) та живлення
+- 3.3в достатньо для роботи оптопари
+![image](https://github.com/victron/pzem-00t-v3-esphome/assets/8330202/f2407423-5254-4c8d-9a53-d05fc8997336)
+
+
+## ESP-01 з без гальваничної розв'язки
+_ref:_ https://mysku.club/blog/aliexpress/92586.html
