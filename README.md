@@ -24,6 +24,12 @@ brown line need to disconnect afteter message 'prepaing install'
 - 3.3в достатньо для роботи оптопари
 ![image](https://github.com/victron/pzem-00t-v3-esphome/assets/8330202/f2407423-5254-4c8d-9a53-d05fc8997336)
 
+### варіант 2
+![image](https://github.com/victron/pzem-00t-v3-esphome/assets/8330202/d25159eb-709f-48ea-93a7-ab9445f0b561)
+
+
 
 ## ESP-01 з без гальваничної розв'язки
 _ref:_ https://mysku.club/blog/aliexpress/92586.html
+
+не вийде, малопотужна схема живлення - не потяане esp8266 (esp-01)
