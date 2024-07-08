@@ -1,0 +1,204 @@
+esphome:
+  name: energy-monitor
+  friendly_name: energy-monitor
+
+esp8266:
+# serial
+  board: esp01_1m
+# wifi
+  # board: esp_wroom_02
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: !secret consumption_key
+
+ota:
+  - platform: esphome
+    password: !secret consumption_ota_password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+captive_portal:
+
+uart:
+  rx_pin: GPIO3
+  tx_pin: GPIO1
+  baud_rate: 9600
+  stop_bits: 1
+
+time:
+  - platform: sntp
+    id: sync_time
+  
+    on_time:
+  # Every Month at specified day
+    - seconds: 0
+      minutes: 0
+      hours: 0
+      days_of_month: 1
+      then:
+        - sensor.integration.reset: total_energy_month #Reset power integrator
+    # Every Week at specified day
+    - seconds: 0
+      minutes: 0
+      hours: 0
+      days_of_week: MON
+      then:
+        - sensor.integration.reset: total_energy_week #Reset power integrator
+    # Every Day at specified hour
+    - seconds: 0
+      minutes: 0
+      hours: 0
+      then:
+        - sensor.integration.reset: total_energy_day #Reset power integrator
+
+
+sensor:
+  - platform: pzemac
+    current:
+      name: "Current"
+      id: pMeter_current
+      accuracy_decimals: 2
+      state_class: "measurement"
+    voltage:
+      name: "Voltage"
+      id: pMeter_voltage
+      accuracy_decimals: 1
+      device_class: "voltage"
+    power:
+      name: "Power"
+      unit_of_measurement: W
+      accuracy_decimals: 2
+      id: pMeter_power
+      state_class: "measurement"
+    frequency:
+      name: "Frequency"
+      unit_of_measurement: Hz
+      accuracy_decimals: 2
+    power_factor:
+      name: "Power Factor"
+      id: pMeter_power_factor
+      device_class: "power_factor"
+      state_class: "measurement"
+    energy:
+      name: "Energy"
+      unit_of_measurement: Wh
+      accuracy_decimals: 1
+      id: pMeter_energy
+      state_class: "measurement"
+    update_interval: 10s
+#  ###################################################
+
+  - platform: template
+    name: "Cumulative Energy"
+    unit_of_measurement: "kWh"
+    accuracy_decimals: 1
+    update_interval: 10s
+    icon: mdi:power
+    lambda: return (( (id(pMeter_energy).state)/1000.0));
+    
+  - platform: template
+    name: "power apparente"
+    id: pMeter_power_apparente
+    unit_of_measurement: "VA"
+    device_class: "apparent_power"
+    state_class: "measurement"
+    accuracy_decimals: 2
+    update_interval: 10s
+    icon: mdi:power
+    lambda: return ( (id(pMeter_power).state/id(pMeter_power_factor).state));
+  
+  - platform: template
+    name: "power reactive"
+    id: pMeter_power_reactive
+    unit_of_measurement: "VAr"
+    accuracy_decimals: 2
+    update_interval: 10s
+    icon: mdi:power
+    lambda: return ( ( sqrt( (id(pMeter_power_apparente).state)*(id(pMeter_power_apparente).state)   -  (id(pMeter_power).state)*(id(pMeter_power).state) ) )  );
+
+  - platform: integration
+    name: "Total Consumption"
+    id: "total_energy"
+    sensor: pMeter_power
+    time_unit: h
+    device_class: "energy"
+    state_class: "total_increasing"
+    unit_of_measurement: kWh
+    accuracy_decimals: 2
+    restore: false #If true, save the reading to the flash memory to prevent data loss in case of power loss
+    filters:
+      - multiply: 0.001
+
+  - platform: integration
+    name: "Daily Consumption"
+    id: "total_energy_day"
+    sensor: pMeter_power
+    time_unit: h
+    device_class: "energy"
+    state_class: "total_increasing"
+    unit_of_measurement: kWh
+    accuracy_decimals: 2
+    restore: false #If true, save the reading to the flash memory to prevent data loss in case of power loss
+    filters:
+      - multiply: 0.001
+
+  - platform: integration
+    name: "Weekly Consumption"
+    id: "total_energy_week"
+    sensor: pMeter_power
+    time_unit: h
+    device_class: "energy"
+    state_class: "total_increasing"
+    unit_of_measurement: kWh
+    accuracy_decimals: 2
+    restore: false #If true, save the reading to the flash memory to prevent data loss in case of power loss
+    filters:
+      - multiply: 0.001
+
+  - platform: integration
+    name: "Monthly Consumption"
+    id: "total_energy_month"
+    sensor: pMeter_power
+    time_unit: h
+    device_class: "energy"
+    state_class: "total_increasing"
+    unit_of_measurement: kWh
+    accuracy_decimals: 2
+    restore: false #If true, save the reading to the flash memory to prevent data loss in case of power loss
+    filters:
+      - multiply: 0.001
+    
+  - platform: wifi_signal
+    name: "WiFi power PMeter"
+    update_interval: 10s
+    
+  - platform: uptime
+    name: "up"
+    id: uptime_sec 
+ 
+switch:
+  - platform: restart
+    name: "PMeter restart"
+    
+text_sensor:
+  - platform: template
+    name: PMeter uptime
+    lambda: |-
+      int seconds = (id(uptime_sec).state);
+      int days = seconds / (24 * 3600);
+      seconds = seconds % (24 * 3600); 
+      int hours = seconds / 3600;
+      seconds = seconds % 3600;
+      int minutes = seconds /  60;
+      seconds = seconds % 60;
+      return { (String(days) +"d " + String(hours) +"h " + String(minutes) +"m "+ String(seconds) +"s").c_str() };
+    icon: mdi:clock-start
+    update_interval: 113s
+    
