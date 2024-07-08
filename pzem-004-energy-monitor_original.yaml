@@ -1,3 +1,4 @@
+# original file from forked repo
 esphome:
   name: pzem-004-energy-monitor
   friendly_name: pzem-004-energy-monitor
